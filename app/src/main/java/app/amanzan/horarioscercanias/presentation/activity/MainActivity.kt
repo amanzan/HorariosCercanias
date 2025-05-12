@@ -1,4 +1,4 @@
-package app.amanzan.horarioscercanias
+package app.amanzan.horarioscercanias.presentation.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import app.amanzan.horarioscercanias.presentation.screen.TrainScheduleScreen
-import app.amanzan.horarioscercanias.ui.theme.MyApplicationTheme
+import app.amanzan.horarioscercanias.presentation.home.TrainScheduleScreen
+import app.amanzan.horarioscercanias.presentation.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

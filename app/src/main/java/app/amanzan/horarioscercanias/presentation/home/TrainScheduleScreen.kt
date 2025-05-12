@@ -1,4 +1,4 @@
-package app.amanzan.horarioscercanias.presentation.screen
+package app.amanzan.horarioscercanias.presentation.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

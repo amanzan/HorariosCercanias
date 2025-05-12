@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package app.amanzan.horarioscercanias.ui.train
+package app.amanzan.horarioscercanias.presentation.train
 
-import app.amanzan.horarioscercanias.ui.theme.MyApplicationTheme
+import app.amanzan.horarioscercanias.presentation.theme.MyApplicationTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

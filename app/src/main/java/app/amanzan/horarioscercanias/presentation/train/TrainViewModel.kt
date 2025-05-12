@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package app.amanzan.horarioscercanias.ui.train
+package app.amanzan.horarioscercanias.presentation.train
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,9 +26,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import app.amanzan.horarioscercanias.data.TrainRepository
-import app.amanzan.horarioscercanias.ui.train.TrainUiState.Error
-import app.amanzan.horarioscercanias.ui.train.TrainUiState.Loading
-import app.amanzan.horarioscercanias.ui.train.TrainUiState.Success
+import app.amanzan.horarioscercanias.presentation.train.TrainUiState.Error
+import app.amanzan.horarioscercanias.presentation.train.TrainUiState.Loading
+import app.amanzan.horarioscercanias.presentation.train.TrainUiState.Success
 import javax.inject.Inject
 
 @HiltViewModel

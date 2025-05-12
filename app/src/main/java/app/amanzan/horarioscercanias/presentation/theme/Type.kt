@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package app.amanzan.horarioscercanias.ui.theme
+package app.amanzan.horarioscercanias.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

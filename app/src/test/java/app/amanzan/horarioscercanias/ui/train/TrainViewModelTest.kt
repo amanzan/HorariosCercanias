@@ -25,6 +25,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import app.amanzan.horarioscercanias.data.TrainRepository
+import app.amanzan.horarioscercanias.presentation.train.TrainUiState
+import app.amanzan.horarioscercanias.presentation.train.TrainViewModel
 
 /**
  * Example local unit test, which will execute on the development machine (host).
