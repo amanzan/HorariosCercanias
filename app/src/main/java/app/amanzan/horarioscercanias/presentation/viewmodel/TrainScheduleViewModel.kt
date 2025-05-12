@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.amanzan.horarioscercanias.domain.model.TrainSchedule
 import app.amanzan.horarioscercanias.domain.model.TrainScheduleResponse
-import app.amanzan.horarioscercanias.domain.repository.TrainScheduleRepository
+import app.amanzan.horarioscercanias.domain.usecase.GetTrainSchedulesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TrainScheduleViewModel @Inject constructor(
-    private val repository: TrainScheduleRepository
+    private val getTrainSchedulesUseCase: GetTrainSchedulesUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<TrainScheduleUiState>(TrainScheduleUiState.Loading)
@@ -34,16 +34,15 @@ class TrainScheduleViewModel @Inject constructor(
                 val request = TrainSchedule()
                 Log.d("TrainScheduleViewModel", "Making request with: $request")
                 
-                val response = repository.getTrainSchedules(request)
-                Log.d("TrainScheduleViewModel", "Received response: $response")
-                
-                if (response.error != null) {
-                    Log.e("TrainScheduleViewModel", "Error in response: ${response.error}")
-                    _uiState.value = TrainScheduleUiState.Error(response.error)
-                } else {
-                    Log.d("TrainScheduleViewModel", "Success response: $response")
-                    _uiState.value = TrainScheduleUiState.Success(response)
-                }
+                getTrainSchedulesUseCase(request)
+                    .onSuccess { response ->
+                        Log.d("TrainScheduleViewModel", "Success response: $response")
+                        _uiState.value = TrainScheduleUiState.Success(response)
+                    }
+                    .onFailure { error ->
+                        Log.e("TrainScheduleViewModel", "Error in response: ${error.message}")
+                        _uiState.value = TrainScheduleUiState.Error(error.message ?: "Error desconocido")
+                    }
             } catch (e: Exception) {
                 Log.e("TrainScheduleViewModel", "Exception occurred", e)
                 _uiState.value = TrainScheduleUiState.Error(e.message ?: "Error desconocido")
