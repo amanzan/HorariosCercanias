@@ -2,24 +2,27 @@ package app.amanzan.horarioscercanias.data.repository
 
 import android.util.Log
 import app.amanzan.horarioscercanias.data.api.TrainScheduleApi
+import app.amanzan.horarioscercanias.data.local.database.TrainScheduleDao
+import app.amanzan.horarioscercanias.data.local.database.TrainScheduleEntity
 import app.amanzan.horarioscercanias.domain.model.TrainSchedule
 import app.amanzan.horarioscercanias.domain.model.TrainScheduleResponse
 import app.amanzan.horarioscercanias.domain.repository.TrainScheduleRepository
 import com.google.gson.Gson
+import java.util.Date
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TrainScheduleRepositoryImpl @Inject constructor(
     private val api: TrainScheduleApi,
-    private val gson: Gson
+    private val gson: Gson,
+    private val dao: TrainScheduleDao
 ) : TrainScheduleRepository {
     override suspend fun getTrainSchedules(request: TrainSchedule): TrainScheduleResponse {
         try {
-            Log.d("TrainScheduleRepo", "Making API request with: ${gson.toJson(request)}")
+            // Try to get from network first
             val response = api.getTrainSchedules(request)
-            Log.d("TrainScheduleRepo", "Response code: ${response.code()}")
-            Log.d("TrainScheduleRepo", "Response headers: ${response.headers()}")
             
             if (!response.isSuccessful) {
                 Log.e("TrainScheduleRepo", "Unsuccessful response: ${response.code()} - ${response.message()}")
@@ -31,16 +34,44 @@ class TrainScheduleRepositoryImpl @Inject constructor(
                 Log.e("TrainScheduleRepo", "Response body is null")
                 return TrainScheduleResponse(error = "Empty response from server")
             }
-
-            Log.d("TrainScheduleRepo", "Response body: ${gson.toJson(responseBody)}")
-            Log.d("TrainScheduleRepo", "Response horario size: ${responseBody.horario.size}")
-            Log.d("TrainScheduleRepo", "Response peticion: ${responseBody.peticion}")
-            Log.d("TrainScheduleRepo", "Response actTiempoReal: ${responseBody.actTiempoReal}")
+            
+            // Cache the response
+            val entity = TrainScheduleEntity(
+                id = "${request.origen}_${request.destino}_${request.fchaViaje}",
+                originCode = request.origen,
+                destinationCode = request.destino,
+                date = request.fchaViaje,
+                lastUpdated = Date(),
+                horarios = responseBody.horario,
+                peticion = responseBody.peticion
+            )
+            dao.insertTrainSchedule(entity)
             
             return responseBody
         } catch (e: Exception) {
             Log.e("TrainScheduleRepo", "Network error", e)
-            return TrainScheduleResponse(error = "Network error: ${e.message}")
+            // If network fails, try to get from cache
+            val cachedSchedule = dao.getTrainSchedule(
+                request.origen,
+                request.destino,
+                request.fchaViaje
+            )
+            
+            return if (cachedSchedule != null) {
+                TrainScheduleResponse(
+                    actTiempoReal = false,
+                    peticion = cachedSchedule.peticion,
+                    horario = cachedSchedule.horarios
+                )
+            } else {
+                TrainScheduleResponse(error = "No se encontraron horarios para la ruta especificada.")
+            }
         }
+    }
+
+    // Clean up old schedules (older than 24 hours)
+    suspend fun cleanupOldSchedules() {
+        val cutoffDate = Date(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(24))
+        dao.deleteOldSchedules(cutoffDate)
     }
 } 

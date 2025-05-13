@@ -18,8 +18,14 @@ package app.amanzan.horarioscercanias.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
-@Database(entities = [Train::class], version = 1)
+@Database(
+    entities = [Train::class, TrainScheduleEntity::class],
+    version = 2
+)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun trainDao(): TrainDao
+    abstract fun trainScheduleDao(): TrainScheduleDao
 }
