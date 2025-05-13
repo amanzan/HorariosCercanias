@@ -33,7 +33,7 @@ fun TrainScheduleScreen(
     viewModel: TrainScheduleViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val isRefreshing = uiState is TrainScheduleUiState.Loading
+    val isRefreshing = uiState is TrainScheduleUiState.Loading && uiState is TrainScheduleUiState.Success
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
 
     LaunchedEffect(origin, destination) {
@@ -67,47 +67,53 @@ fun TrainScheduleScreen(
             )
         }
     ) { paddingValues ->
-        SwipeRefresh(
-            state = swipeRefreshState,
-            onRefresh = { viewModel.loadTrainSchedules(origin, destination) },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            when (uiState) {
-                is TrainScheduleUiState.Initial -> {
+        when (uiState) {
+            is TrainScheduleUiState.Initial -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Selecciona una ruta para ver los horarios",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+            is TrainScheduleUiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            is TrainScheduleUiState.Success -> {
+                val data = (uiState as TrainScheduleUiState.Success).data
+                if (data.error != null) {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Selecciona una ruta para ver los horarios",
-                            style = MaterialTheme.typography.bodyLarge
+                            text = data.error,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(16.dp)
                         )
                     }
-                }
-                is TrainScheduleUiState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                } else {
+                    SwipeRefresh(
+                        state = swipeRefreshState,
+                        onRefresh = { viewModel.loadTrainSchedules(origin, destination) },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
                     ) {
-                        CircularProgressIndicator()
-                    }
-                }
-                is TrainScheduleUiState.Success -> {
-                    val data = (uiState as TrainScheduleUiState.Success).data
-                    if (data.error != null) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = data.error,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(16.dp)
-                            )
-                        }
-                    } else {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -232,17 +238,19 @@ fun TrainScheduleScreen(
                         }
                     }
                 }
-                is TrainScheduleUiState.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = (uiState as TrainScheduleUiState.Error).message,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
+            }
+            is TrainScheduleUiState.Error -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = (uiState as TrainScheduleUiState.Error).message,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
             }
         }

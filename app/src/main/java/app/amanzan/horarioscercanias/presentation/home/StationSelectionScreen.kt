@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import app.amanzan.horarioscercanias.domain.model.Station
@@ -22,6 +24,7 @@ fun StationSelectionScreen(
 ) {
     val selectedOrigin by viewModel.selectedOrigin.collectAsState()
     val selectedDestination by viewModel.selectedDestination.collectAsState()
+    val isOnline by viewModel.isOnline.collectAsState()
     var showOriginDropdown by remember { mutableStateOf(false) }
     var showDestinationDropdown by remember { mutableStateOf(false) }
 
@@ -32,6 +35,36 @@ fun StationSelectionScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        if (!isOnline) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFFFEB3B)
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = Color.Black
+                    )
+                    Text(
+                        text = "Sin conexión a internet. Los datos mostrados pueden no estar actualizados.",
+                        color = Color.Black,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+
         Text(
             text = "Selecciona tu ruta",
             style = MaterialTheme.typography.headlineMedium
