@@ -49,26 +49,24 @@ abstract class NetworkModule {
                     
                     val request = original.newBuilder()
                         .header("Accept", "application/json, text/plain, */*")
-                        .header("Accept-Language", "en-US,en;q=0.5")
+                        .header("Accept-Language", "es-ES,es;q=0.9")
                         .header("Content-Type", "application/json;charset=UTF-8")
                         .header("Origin", "https://horarios.renfe.com")
                         .header("Referer", "https://horarios.renfe.com/cer/hjcer300.jsp?NUCLEO=10&CP=NO&I=s")
-                        .header("Sec-Fetch-Dest", "empty")
-                        .header("Sec-Fetch-Mode", "cors")
-                        .header("Sec-Fetch-Site", "same-origin")
-                        .header("Sec-GPC", "1")
                         .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36")
-                        .header("sec-ch-ua", "\"Chromium\";v=\"136\", \"Brave\";v=\"136\", \"Not.A/Brand\";v=\"99\"")
-                        .header("sec-ch-ua-mobile", "?0")
-                        .header("sec-ch-ua-platform", "\"Windows\"")
-                        .addHeader("Cookie", "rxVisitor=1746797998089HF2PDQHFBG74EJIF2EVMDTRQCK4P89F8; dtCookie=v_4_srv_8_sn_KG74AQIFMK8VSN6CETOG3497EIGU1LHN_perc_100000_ol_0_mul_1_app-3Aea7c4b59f27d43eb_0; JSESSIONID=0000P544xYJ63HHYK6hCwdwDgoF:1fiumv9g6; dtSa=-; rxvt=1747054520053|1747052720003; dtPC=$452720001_531h-vNRMWKKLONTQROJSMVAQSRHMWKFCGCUAV-0e0")
                         .method(original.method, original.body)
                         .build()
                     
                     Log.d("NetworkModule", "Modified request: ${request.url}")
                     Log.d("NetworkModule", "Modified headers: ${request.headers}")
+                    Log.d("NetworkModule", "Request body: ${request.body}")
                     
-                    chain.proceed(request)
+                    val response = chain.proceed(request)
+                    Log.d("NetworkModule", "Response code: ${response.code}")
+                    Log.d("NetworkModule", "Response headers: ${response.headers}")
+                    Log.d("NetworkModule", "Response body: ${response.peekBody(Long.MAX_VALUE).string()}")
+                    
+                    response
                 }
                 .addInterceptor(loggingInterceptor)
                 .connectTimeout(30, TimeUnit.SECONDS)

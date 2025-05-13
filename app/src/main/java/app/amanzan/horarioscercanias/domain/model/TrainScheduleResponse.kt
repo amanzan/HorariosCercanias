@@ -25,5 +25,13 @@ data class Horario(
     val horaSalida: String = "",
     val horaLlegada: String = "",
     val duracion: String = "",
-    val accesible: Boolean = false
+    val accesible: Boolean = false,
+    val civis: String? = null,
+    val caracteristica: List<Caracteristica> = emptyList()
+)
+
+data class Caracteristica(
+    val codigoCarac: String = "",
+    val descCarac: String = "",
+    val marcaActivo: String = ""
 ) 

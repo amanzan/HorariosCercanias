@@ -32,7 +32,7 @@ class TrainScheduleRepositoryImpl @Inject constructor(
                 return TrainScheduleResponse(error = "Empty response from server")
             }
 
-            Log.d("TrainScheduleRepo", "Response body: $responseBody")
+            Log.d("TrainScheduleRepo", "Response body: ${gson.toJson(responseBody)}")
             Log.d("TrainScheduleRepo", "Response horario size: ${responseBody.horario.size}")
             Log.d("TrainScheduleRepo", "Response peticion: ${responseBody.peticion}")
             Log.d("TrainScheduleRepo", "Response actTiempoReal: ${responseBody.actTiempoReal}")

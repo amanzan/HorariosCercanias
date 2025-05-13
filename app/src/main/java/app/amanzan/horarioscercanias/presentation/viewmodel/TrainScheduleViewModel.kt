@@ -3,6 +3,7 @@ package app.amanzan.horarioscercanias.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.amanzan.horarioscercanias.domain.model.Station
 import app.amanzan.horarioscercanias.domain.model.TrainSchedule
 import app.amanzan.horarioscercanias.domain.model.TrainScheduleResponse
 import app.amanzan.horarioscercanias.domain.usecase.GetTrainSchedulesUseCase
@@ -18,20 +19,15 @@ class TrainScheduleViewModel @Inject constructor(
     private val getTrainSchedulesUseCase: GetTrainSchedulesUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<TrainScheduleUiState>(TrainScheduleUiState.Loading)
+    private val _uiState = MutableStateFlow<TrainScheduleUiState>(TrainScheduleUiState.Initial)
     val uiState: StateFlow<TrainScheduleUiState> = _uiState.asStateFlow()
 
-    init {
-        Log.d("TrainScheduleViewModel", "ViewModel initialized")
-        loadTrainSchedules()
-    }
-
-    fun loadTrainSchedules() {
+    fun loadTrainSchedules(origin: Station, destination: Station) {
         Log.d("TrainScheduleViewModel", "Loading train schedules...")
         viewModelScope.launch {
             _uiState.value = TrainScheduleUiState.Loading
             try {
-                val request = TrainSchedule()
+                val request = TrainSchedule.fromStations(origin, destination)
                 Log.d("TrainScheduleViewModel", "Making request with: $request")
                 
                 getTrainSchedulesUseCase(request)
@@ -52,6 +48,7 @@ class TrainScheduleViewModel @Inject constructor(
 }
 
 sealed interface TrainScheduleUiState {
+    data object Initial : TrainScheduleUiState
     data object Loading : TrainScheduleUiState
     data class Success(val data: TrainScheduleResponse) : TrainScheduleUiState
     data class Error(val message: String) : TrainScheduleUiState
