@@ -7,7 +7,6 @@ import app.amanzan.horarioscercanias.data.local.database.TrainScheduleEntity
 import app.amanzan.horarioscercanias.domain.model.TrainSchedule
 import app.amanzan.horarioscercanias.domain.model.TrainScheduleResponse
 import app.amanzan.horarioscercanias.domain.repository.TrainScheduleRepository
-import com.google.gson.Gson
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -16,7 +15,6 @@ import javax.inject.Singleton
 @Singleton
 class TrainScheduleRepositoryImpl @Inject constructor(
     private val api: TrainScheduleApi,
-    private val gson: Gson,
     private val dao: TrainScheduleDao
 ) : TrainScheduleRepository {
     override suspend fun getTrainSchedules(request: TrainSchedule): TrainScheduleResponse {

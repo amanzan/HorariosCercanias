@@ -211,7 +211,8 @@ fun TrainScheduleScreen(
                                             Text(
                                                 text = horario.linea,
                                                 modifier = Modifier.weight(1f),
-                                                style = MaterialTheme.typography.bodyMedium
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = Color.Black
                                             )
                                             Text(
                                                 text = horario.horaSalida,
